@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+  dashboard:
+    build: ./dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      - ROBLE_BASE_HOST=https://roble-api.openlab.uninorte.edu.co
+      - ROBLE_CONTRACT=microservices_roble_e65ac352d7
+
+  product:
+    build: ./product
+    ports:
+      - "5000:5000"
+    environment:
+      - ROBLE_BASE_HOST=https://roble-api.openlab.uninorte.edu.co
+      - ROBLE_CONTRACT=microservices_roble_e65ac352d7
+
+  user:
+    build: ./user
+    ports:
+      - "5001:5000"
+    environment:
+      - ROBLE_BASE_HOST=https://roble-api.openlab.uninorte.edu.co
+      - ROBLE_CONTRACT=microservices_roble_e65ac352d7
