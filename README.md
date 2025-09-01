@@ -59,3 +59,61 @@ Authorization: Bearer &lt;accessToken&gt;</code></pre>
   <li>Es necesario tener los usuarios verificados en Roble.</li>
   <li>El dashboard permite administrar visualmente los microservicios (en desarrollo).</li>
 </ul>
+
+</br>
+</br>
+</br>
+
+<h2>Planificación para completar la actividad</h2>
+
+<p>Para finalizar y entregar la actividad con calidad, se recomienda seguir estos pasos:</p>
+
+<h3>1. Completar y mejorar el dashboard</h3>
+<ul>
+  <li>Desarrollar el frontend que permita visualizar y administrar los recursos (usuarios, productos).</li>
+  <li>Integrar autenticación y control de acceso en el dashboard.</li>
+  <li>Conectar el dashboard con los microservicios para consumir sus APIs.</li>
+</ul>
+
+<h3>2. Documentación completa y clara</h3>
+<ul>
+  <li>Ampliar el README con guías detalladas de instalación, pruebas y despliegue.</li>
+  <li>Documentar cada endpoint con ejemplos (puede usar Swagger u OpenAPI).</li>
+  <li>Agregar instrucciones para gestión de variables de entorno y configuración.</li>
+</ul>
+
+<h3>3. Pruebas Automatizadas</h3>
+<ul>
+  <li>Escribir tests unitarios para la lógica del backend.</li>
+  <li>Crear tests de integración para endpoints HTTP.</li>
+  <li>Automatizar pruebas de autenticación y renovación de tokens.</li>
+</ul>
+
+<h3>4. Optimización y buenas prácticas</h3>
+<ul>
+  <li>Separar el código en módulos y capas para mejor mantenibilidad.</li>
+  <li>Mejorar gestión de errores con logs y monitoreo.</li>
+  <li>Agregar archivos <code>.dockerignore</code> para optimizar imágenes.</li>
+  <li>Considerar variables de entorno para puertos y configuraciones.</li>
+</ul>
+
+<h3>5. Despliegue y entrega</h3>
+<ul>
+  <li>Preparar scripts para construcción y despliegue automático.</li>
+  <li>Verificar que toda la plataforma funcione correctamente con docker-compose.</li>
+  <li>Ajustar configuración para ambiente producción si aplica.</li>
+</ul>
+
+<h2>Cronograma de planificación</h2>
+
+<table>
+<thead>
+<tr><th>Semana</th><th>Actividad</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Terminar dashboard básico y conexión</td></tr>
+<tr><td>2</td><td>Completar documentación y ejemplos</td></tr>
+<tr><td>3</td><td>Tests automatizados y revisión de código</td></tr>
+<tr><td>4</td><td>Optimización, despliegue y entrega</td></tr>
+</tbody>
+</table>
