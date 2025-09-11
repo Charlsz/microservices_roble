@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard de Microservicios</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Dashboard de Microservicios</h1>
+        
+        <!-- Formulario de login -->
+        <div id="loginForm" class="card p-3 mb-4">
+            <h3>Login</h3>
+            <input type="email" id="email" placeholder="Email" class="form-control mb-2">
+            <input type="password" id="password" placeholder="Password" class="form-control mb-2">
+            <button onclick="login()" class="btn btn-primary">Login</button>
+        </div>
+
+        <!-- Panel de microservicios -->
+        <div id="servicesPanel" style="display:none">
+            <h3>Microservicios Activos</h3>
+            <div id="servicesList" class="list-group mb-4"></div>
+            
+            <h3>Registrar Nuevo Microservicio</h3>
+            <div class="card p-3">
+                <input type="text" id="serviceName" placeholder="Nombre" class="form-control mb-2">
+                <input type="number" id="servicePort" placeholder="Puerto" class="form-control mb-2">
+                <input type="text" id="serviceType" placeholder="Tipo" class="form-control mb-2">
+                <textarea id="serviceDescription" placeholder="Descripción" class="form-control mb-2"></textarea>
+                <button onclick="registerService()" class="btn btn-success">Registrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    currentUser = { email, ...data };
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('servicesPanel').style.display = 'block';
+                    loadServices();
+                }
+            } catch (error) {
+                alert('Error en login: ' + error);
+            }
+        }
+
+        async function loadServices() {
+            const response = await fetch('/microservices', {
+                headers: { 
+                    'x-user-email': currentUser.email,
+                    'Authorization': `Bearer ${currentUser.accessToken}`
+                }
+            });
+            const services = await response.json();
+            
+            const list = document.getElementById('servicesList');
+            list.innerHTML = services.map(service => `
+                <div class="list-group-item">
+                    <h5>${service.name}</h5>
+                    <p>Puerto: ${service.port} | Tipo: ${service.type}</p>
+                    <p>${service.description}</p>
+                    <button onclick="deleteService('${service.name}')" class="btn btn-danger btn-sm">Eliminar</button>
+                </div>
+            `).join('');
+        }
+
+        async function registerService() {
+            const name = document.getElementById('serviceName').value;
+            const port = document.getElementById('servicePort').value;
+            const type = document.getElementById('serviceType').value;
+            const description = document.getElementById('serviceDescription').value;
+
+            try {
+                await fetch('/microservices', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-user-email': currentUser.email,
+                        'Authorization': `Bearer ${currentUser.accessToken}`
+                    },
+                    body: JSON.stringify({ name, port, type, description })
+                });
+                loadServices();
+            } catch (error) {
+                alert('Error al registrar servicio: ' + error);
+            }
+        }
+
+        async function deleteService(name) {
+            try {
+                await fetch(`/microservices/${name}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'x-user-email': currentUser.email,
+                        'Authorization': `Bearer ${currentUser.accessToken}`
+                    }
+                });
+                loadServices();
+            } catch (error) {
+                alert('Error al eliminar servicio: ' + error);
+            }
+        }
+    </script>
+</body>
+</html>

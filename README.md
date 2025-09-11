@@ -1,3 +1,21 @@
+# Plataforma de Microservicios con Roble
+
+## Descripción
+Sistema de microservicios dinámicos que se conectan con la plataforma Roble para autenticación y almacenamiento de datos.
+
+## Arquitectura
+```ascii
++-------------+     +----------------+     +-----------------+
+|   Frontend   |---->|    Dashboard    |---->|  Microservicios  |
+|  (Browser)   |<----|   (Gateway)     |<----|   Dinámicos     |
++-------------+     +----------------+     +-----------------+
+                           |                       |
+                           v                       v
+                    +----------------------------------+
+                    |           Roble API              |
+                    |  (Autenticación y Base Datos)    |
+                    +----------------------------------+
+```
 <h1>Proyecto de Microservicios con Roble</h1>
 <p>Este proyecto consta de una plataforma con microservicios separados para <strong>productos</strong> y <strong>usuarios</strong>, cada uno con autenticación basada en Roble y acceso CRUD seguro a datos en la plataforma.</p>
 <h2>Estructura del Proyecto</h2>
