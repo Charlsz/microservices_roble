@@ -1,9 +1,9 @@
-# Plataforma de Microservicios con Roble
+<h1> Plataforma de Microservicios con Roble</h1>
 
-## Descripción
+<h2>Descripción</h2>
 Sistema de microservicios dinámicos que se conectan con la plataforma Roble para autenticación y almacenamiento de datos.
 
-## Arquitectura
+<h2>Arquitectura</h2>
 ```ascii
 +-------------+     +----------------+     +-----------------+
 |   Frontend   |---->|    Dashboard    |---->|  Microservicios  |
