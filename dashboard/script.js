@@ -131,7 +131,35 @@ app.get('/datos-protegidos', ensureAuth, async (req, res) => {
 // Almacén de microservicios registrados
 const microservices = new Map();
 
-// Endpoints para gestión de microservicios
+// Store for microservices status
+const servicesStatus = new Map();
+
+// Monitor service health
+async function checkServiceHealth(serviceUrl) {
+  try {
+    const response = await axios.get(`${serviceUrl}/health`);
+    return response.status === 200;
+  } catch (error) {
+    return false;
+  }
+}
+
+// Endpoint to get all microservices status
+app.get('/services/status', ensureAuth, async (req, res) => {
+  const statuses = [];
+  for (const [serviceName, service] of microservices) {
+    const isHealthy = await checkServiceHealth(service.url);
+    servicesStatus.set(serviceName, isHealthy);
+    statuses.push({
+      name: serviceName,
+      ...service,
+      status: isHealthy ? 'active' : 'down'
+    });
+  }
+  res.json(statuses);
+});
+
+// Endpoint para gestión de microservicios
 app.post('/microservices', ensureAuth, async (req, res) => {
   const { name, port, type, description } = req.body;
   if (!name || !port || !type) {
@@ -176,6 +204,86 @@ app.delete('/microservices/:name', ensureAuth, (req, res) => {
 
   microservices.delete(name);
   res.json({ message: 'Microservicio eliminado' });
+});
+
+// Enhanced create service endpoint
+app.post('/services', ensureAuth, async (req, res) => {
+  const { name, port, type, description, endpoints } = req.body;
+  
+  if (!name || !port || !type) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  const serviceUrl = `http://localhost:${port}`;
+  
+  microservices.set(name, {
+    name,
+    port,
+    type,
+    description,
+    url: serviceUrl,
+    endpoints: endpoints || [],
+    createdAt: new Date()
+  });
+
+  res.json({
+    message: 'Service registered successfully',
+    service: microservices.get(name)
+  });
+});
+
+// Update service endpoint
+app.put('/services/:name', ensureAuth, async (req, res) => {
+  const { name } = req.params;
+  const service = microservices.get(name);
+  
+  if (!service) {
+    return res.status(404).json({ error: 'Service not found' });
+  }
+
+  const updatedService = {
+    ...service,
+    ...req.body,
+    updatedAt: new Date()
+  };
+
+  microservices.set(name, updatedService);
+  res.json({
+    message: 'Service updated successfully',
+    service: updatedService
+  });
+});
+
+// Test endpoint functionality
+app.post('/services/test-endpoint', ensureAuth, async (req, res) => {
+  const { serviceName, endpoint, method, params } = req.body;
+  const service = microservices.get(serviceName);
+
+  if (!service) {
+    return res.status(404).json({ error: 'Service not found' });
+  }
+
+  try {
+    const response = await axios({
+      method: method || 'GET',
+      url: `${service.url}${endpoint}`,
+      headers: {
+        Authorization: `Bearer ${req.accessToken}`
+      },
+      params: method === 'GET' ? params : undefined,
+      data: method !== 'GET' ? params : undefined
+    });
+
+    res.json({
+      status: 'success',
+      data: response.data
+    });
+  } catch (error) {
+    res.status(error.response?.status || 500).json({
+      status: 'error',
+      error: error.response?.data || error.message
+    });
+  }
 });
 
 // Iniciar servidor

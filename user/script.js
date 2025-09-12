@@ -57,6 +57,10 @@ app.get("/", (req, res) => {
   });
 });
 
+app.get('/health', (req, res) => {
+  res.json({ status: 'healthy' });
+});
+
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
