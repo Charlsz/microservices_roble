@@ -1,11 +1,28 @@
 import express from 'express';
 import axios from 'axios';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
+
+// Add this to serve static files
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Base route to serve the dashboard
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.json({ status: 'healthy' });
+});
 
 const BASE_URL = process.env.ROBLE_BASE_HOST;
 const CONTRACT = process.env.ROBLE_CONTRACT;
@@ -214,7 +231,8 @@ app.post('/services', ensureAuth, async (req, res) => {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  const serviceUrl = `http://localhost:${port}`;
+  // Use Docker service name instead of localhost
+  const serviceUrl = `http://${type}:${port}`;
   
   microservices.set(name, {
     name,
@@ -264,11 +282,13 @@ app.post('/services/test-endpoint', ensureAuth, async (req, res) => {
   }
 
   try {
+    console.log(`Attempting to connect to: ${service.url}${endpoint}`);
     const response = await axios({
       method: method || 'GET',
       url: `${service.url}${endpoint}`,
       headers: {
-        Authorization: `Bearer ${req.accessToken}`
+        'Authorization': `Bearer ${req.accessToken}`,
+        'x-user-email': req.userEmail
       },
       params: method === 'GET' ? params : undefined,
       data: method !== 'GET' ? params : undefined
@@ -279,6 +299,7 @@ app.post('/services/test-endpoint', ensureAuth, async (req, res) => {
       data: response.data
     });
   } catch (error) {
+    console.error('Service request error:', error.message);
     res.status(error.response?.status || 500).json({
       status: 'error',
       error: error.response?.data || error.message
@@ -287,5 +308,7 @@ app.post('/services/test-endpoint', ensureAuth, async (req, res) => {
 });
 
 // Iniciar servidor
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Microservicio corriendo en puerto ${PORT}`));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Dashboard running on port ${PORT}`);
+});

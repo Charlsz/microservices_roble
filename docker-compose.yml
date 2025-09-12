@@ -6,21 +6,31 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - ROBLE_BASE_HOST=https://roble-api.openlab.uninorte.edu.co
-      - ROBLE_CONTRACT=microservices_roble_e65ac352d7
-
-  product:
-    build: ./product
-    ports:
-      - "5000:5000"
-    environment:
-      - ROBLE_BASE_HOST=https://roble-api.openlab.uninorte.edu.co
-      - ROBLE_CONTRACT=microservices_roble_e65ac352d7
+      - ROBLE_BASE_HOST=${ROBLE_BASE_HOST}
+      - ROBLE_CONTRACT=${ROBLE_CONTRACT}
+    networks:
+      - microservices-net
 
   user:
     build: ./user
     ports:
       - "5001:5000"
     environment:
-      - ROBLE_BASE_HOST=https://roble-api.openlab.uninorte.edu.co
-      - ROBLE_CONTRACT=microservices_roble_e65ac352d7
+      - ROBLE_BASE_HOST=${ROBLE_BASE_HOST}
+      - ROBLE_CONTRACT=${ROBLE_CONTRACT}
+    networks:
+      - microservices-net
+
+  product:
+    build: ./product
+    ports:
+      - "5000:5000"
+    environment:
+      - ROBLE_BASE_HOST=${ROBLE_BASE_HOST}
+      - ROBLE_CONTRACT=${ROBLE_CONTRACT}
+    networks:
+      - microservices-net
+
+networks:
+  microservices-net:
+    driver: bridge
