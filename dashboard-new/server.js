@@ -15,7 +15,7 @@ const ROBLE_CONTRACT = process.env.ROBLE_CONTRACT || 'microservices_roble_e65ac3
 
 // Estado de microservicios registrados
 const registeredServices = new Map();
-let nextPort = 5001;
+let nextPort = 5000;
 
 // Middleware de autenticación ROBLE
 const authenticateToken = async (req, res, next) => {
@@ -89,17 +89,16 @@ app.post('/api/microservices', authenticateToken, async (req, res) => {
     }
 
     try {
-        // Crear microservicio basado en template
-        const servicePort = nextPort++;
+        const servicePort = 5000;
         const serviceData = {
             name,
             type,
             description,
             port: servicePort,
-            url: `http://localhost:${servicePort}`,
+            url: `http://microservice-template:${servicePort}`,
             status: 'creating',
             createdAt: new Date().toISOString(),
-            endpoints: [`/api/${type}`, `/api/${type}/process`]
+            endpoints: ['/health', '/api/info', '/api/process', '/api/data-filter', '/api/data-aggregation', '/api/crud']
         };
 
         registeredServices.set(name, serviceData);
