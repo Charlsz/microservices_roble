@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   dashboard:
-    build: ./dashboard
+    build: ./dashboard-new
     ports:
       - "3000:3000"
     environment:
@@ -10,27 +10,23 @@ services:
       - ROBLE_CONTRACT=${ROBLE_CONTRACT}
     networks:
       - microservices-net
+    depends_on:
+      - microservice-template
 
-  user:
-    build: ./user
-    ports:
-      - "5001:5000"
-    environment:
-      - ROBLE_BASE_HOST=${ROBLE_BASE_HOST}
-      - ROBLE_CONTRACT=${ROBLE_CONTRACT}
-    networks:
-      - microservices-net
-
-  product:
-    build: ./product
+  microservice-template:
+    build: ./microservice-template
     ports:
       - "5000:5000"
     environment:
       - ROBLE_BASE_HOST=${ROBLE_BASE_HOST}
       - ROBLE_CONTRACT=${ROBLE_CONTRACT}
+      - SERVICE_NAME=template-service
     networks:
       - microservices-net
 
 networks:
   microservices-net:
     driver: bridge
+
+volumes:
+  docker_sock:
