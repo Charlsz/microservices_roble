@@ -153,6 +153,7 @@ def service_info():
             '/api/process',
             '/api/data-filter',
             '/api/data-aggregation'
+            # TODO: Agregar más endpoints según se implementen ( que permita que el mismo usuario modifique los endpoints e implemente codigo en python preferiblemente con un editor visual )
         ],
         'user': request.user.get('email', 'unknown'),
         'roble_database': ROBLE_CONTRACT
@@ -383,6 +384,9 @@ def group_by_field(data, field):
         'groups': {k: len(v) for k, v in groups.items()},
         'total_groups': len(groups)
     }
+
+#TODO: Implementar función para que el usuario pueda agregar sus propias funciones de procesamiento
+
 
 def generate_summary(data):
     """Generar resumen de datos"""
